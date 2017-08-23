@@ -99,3 +99,24 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+
+# some directories and files to be ignore
+kunming-xiaoshengchu.txt 
+qa_corpus/*
+qa-crawler/*
+qa_dataset/*
+qa_education.txt 
+qa_gaokao_clustering.txt 
+questions_w2v_db.npz.bak 
+sim_education_w2v/* 
+tempfile/*
+xiaoshengchu-back/*
+zhiwiki_extracted/*
+*.bz2 
+/OpenCC
+/dbscan
+/wikiextractor
+./query_intent/qa_gaokao_csv.txt
+./query_intent/qa_gaokao_csv.txt
+cluster_for_weibo_data/
