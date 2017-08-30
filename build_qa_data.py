@@ -56,6 +56,9 @@ def build_dataset(dir_source, stopwords_list):
     question_idx = 0
 
     for subdir_file in subdirs:
+        if not os.path.isdir(os.path.join(dir_source, subdir_file)):
+            print 'skip file %s' % os.path.join(dir_source, subdir_file)
+            continue # if is a file skip
         # parse content in file
         subfiles = os.listdir(os.path.join(dir_source, subdir_file))
         for subsubfile in subfiles:
@@ -195,20 +198,20 @@ if __name__ == '__main__':
             stopwords_list.append(line.strip('\n'))
 
     # initial qa dataset directory
-    dir_qa_dataset = '/media/xuxing/windisk/workspace-xing/qa-system/qa_dataset'
+    dir_qa_dataset = './qa_dataset'
 
-    list_qa_dataset = build_dataset(dir_qa_dataset, stopwords_list)
     qa_pickle_file = 'qa_dataset.pickle'
 
     # save in pickle
     if not os.path.exists(os.path.join(dir_qa_dataset, qa_pickle_file)):
         print '%s not exist, creating it!' % qa_pickle_file
+        list_qa_dataset = build_dataset(dir_qa_dataset, stopwords_list)
         fid_qa = open(os.path.join(dir_qa_dataset, qa_pickle_file), 'w')
         pickle.dump(list_qa_dataset, fid_qa)
         fid_qa.close()
         print 'save %s finished' % qa_pickle_file
     else:
-        fid_qa = open(os.path.join(dir_qa_dataset, qa_pickle_file), 'w')
+        fid_qa = open(os.path.join(dir_qa_dataset, qa_pickle_file), 'r')
         list_qa_dataset = pickle.load(fid_qa)
         fid_qa.close()
         print 'load existing %s' % qa_pickle_file
@@ -217,7 +220,7 @@ if __name__ == '__main__':
     # load the question answer dataset, pickle
     qa_conv_file = 'qa_education.txt'
     numQestions = len(list_qa_dataset)
-    with open(qa_conv_file, 'w') as ins:
+    with open(os.path.join(dir_qa_dataset, qa_conv_file), 'w') as ins:
         for idx in range(numQestions):
             item = list_qa_dataset[idx]
             # item format (url, question, answer)
@@ -225,7 +228,7 @@ if __name__ == '__main__':
             answer = item[1]
             try:
                 ins.write('%s\n' % question)
-                # ins.write('%s\n' % answer)
+                ins.write('%s\n' % answer)
                 # ins.write('\n')
             except:
                 print 'error'

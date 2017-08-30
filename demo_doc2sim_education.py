@@ -60,6 +60,26 @@ def load_qa_education(data_dir, education_file):
 
     return education_content
 
+def load_qa_education_with_answer(data_dir, education_file):
+    '''
+        load the eudcation file, return a list, with each element is a string in each line
+    '''
+    education_content = []
+    answer_content = []
+    idx = 0
+    with open(os.path.join(data_dir, education_file)) as fid:
+        for item in fid:
+            if idx % 2 == 0: # questions
+                education_content.append(item.strip('\n'))
+            elif idx % 2 == 1: # answer
+                answer_content.append(item.strip('\n'))
+
+            idx = idx + 1
+            # if idx % 1000 == 0:
+            #     print 'loading %d-th questions done!' % idx
+    print 'loading %d questions done!' % int(idx/2)
+    return education_content, answer_content
+
 def load_stopwords_file(data_dir, stopwords_file):
     '''
         load the stopwords file, return a list, with each element is a string in each line
@@ -177,21 +197,22 @@ def calculate_education_data_w2v(data_dir, education_content, w2v_model, stopwor
 
 if __name__ == '__main__':
     # load the eudcation data
-    data_dir = '/media/xuxing/windisk/workspace-xing/qa-system/qa_dataset'
+    data_dir = './qa_dataset'
     qa_education_file = 'qa_education.txt'
 
-    education_content = load_qa_education(data_dir, qa_education_file)
+    # education_content = load_qa_education(data_dir, qa_education_file)
+    education_content, answer_content = load_qa_education_with_answer(data_dir, qa_education_file)
 
     # use jieba to cut the sentence in each line with stopwords
     stopwords_file = 'stopwords_gaokao.txt'
-    stopwords_dir = '/media/xuxing/windisk/workspace-xing/qa-system/stopwords_cn'
+    stopwords_dir = './stopwords_cn'
     stopwords_list = load_stopwords_file(stopwords_dir, stopwords_file)
 
-    '''
+
     # caluclate the dictionary and the similarity of the given corpus
     dictionary, similarity = calculate_education_data(data_dir, education_content, stopwords_list)
     print 'obtained the dictionary and similarity of the %s corpus!' % qa_education_file
-    
+
     similarity.num_best = 3
     while(True):
         print '欢迎来到小题博士-教育问答 @_@'
@@ -203,14 +224,16 @@ if __name__ == '__main__':
         print '这是你要问的问题吗？'
         for idx, content in res:
             print '%d, %s' % (idx, education_content[idx])
+            print '%s' % answer_content[idx]
 
         print '################################'
         print '请问下一个问题 @_@'
-    '''
 
-    # caluclate the dictionary and the similarity of the given corpus
+
+    '''
+    # caluclate the dictionary and the similarity using walking-earth similarity measure of the given corpus
     # load wiki model
-    wiki_model_file = '/media/xuxing/windisk/workspace-xing/qa-system/tempfile/out_w2v_qa_incremental.model'
+    wiki_model_file = './tempfile/out_w2v_qa_incremental.model'
     wiki_model = gensim.models.Word2Vec.load(wiki_model_file)
 
     similarity = calculate_education_data_w2v(data_dir, education_content, wiki_model, stopwords_list)
@@ -228,3 +251,5 @@ if __name__ == '__main__':
 
         print '################################'
         print '请问下一个问题 @_@'
+    '''
+

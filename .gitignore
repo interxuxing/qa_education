@@ -120,3 +120,4 @@ zhiwiki_extracted/*
 ./query_intent/qa_gaokao_csv.txt
 ./query_intent/qa_gaokao_csv.txt
 cluster_for_weibo_data/
+.idea/
