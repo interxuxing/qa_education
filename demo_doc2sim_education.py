@@ -102,14 +102,28 @@ def calculate_education_data(data_dir, education_content, stopwords_list):
     :param stopwords_list: stopwords list for eudcation corpus
     :return: a dictionary, a simialrity matrix
     '''
-    corpora_documents = []
-    idx = 0
-    for item_text in education_content:
-        item_str = filtering_line(item_text, stopwords_list)
-        corpora_documents.append(item_str)
-        idx = idx + 1
-        if idx % 1000 == 0:
-            print 'jieba cutting for %d-th sentence' % idx
+
+    corpora_documents_name = 'qa_education_corpora.pickle'
+    if not os.path.exists(os.path.join(data_dir, corpora_documents_name)):
+        corpora_documents = []
+        idx = 0
+        for item_text in education_content:
+            item_str = filtering_line(item_text, stopwords_list)
+            corpora_documents.append(item_str)
+            idx = idx + 1
+            if idx % 1000 == 0:
+                print 'jieba cutting for %d-th sentence' % idx
+        # dump pickfile
+        fid_corpora = open(os.path.join(data_dir, corpora_documents_name), 'wb')
+        pickle.dump(corpora_documents, fid_corpora)
+        fid_corpora.close()
+        print 'save %s finished' % corpora_documents_name
+    else:
+        # load pickfile
+        fid_corpora = open(os.path.join(data_dir, corpora_documents_name), 'rb')
+        corpora_documents = pickle.load(fid_corpora)
+        fid_corpora.close()
+        print 'load %s finished' % corpora_documents_name
 
     dict_name = 'dict_education'
     # 生成字典和向量语料
@@ -216,6 +230,10 @@ if __name__ == '__main__':
     similarity.num_best = 3
     while(True):
         print '欢迎来到小题博士-教育问答 @_@'
+        print '你可以咨询与中小学教育相关的问题，比如:'
+        print '  北京好的幼儿园推荐? \n 中考前饮食应该注意什么？\n 我家小孩上课注意力不集中，贪玩，怎么办？ \n 小孩子在学校打架，怎么办？'
+        print '################################'
+        print ''
         input_query = raw_input(u'请输入你要问的问题：')
         input_query_cut = filtering_line(input_query, stopwords_list)
         # parse the input query, get its doc vector
